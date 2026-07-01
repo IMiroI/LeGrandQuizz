@@ -1,0 +1,12 @@
+@use "tailwindcss";
+@plugin "daisyui";
+
+@theme {
+  --color-primary: #2d55fb;      /* Le bleu vif du bouton Dashboard */
+  --color-base-100: #f8fafc;     /* Gris slate-50 pour le fond */
+  --radius-box: 1.5rem;          /* Coins très arrondis comme sur l'image */
+}
+
+/* On force DaisyUI à utiliser nos arrondis */
+.btn { border-radius: 0.75rem; }
+.card { border-radius: 1.5rem; }
