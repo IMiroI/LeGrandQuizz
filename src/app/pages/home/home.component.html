@@ -90,7 +90,7 @@
              </div>
 
              <div class="flex -space-x-3">
-                <img *ngFor="let p of game.players | slice:0:3" [src]="p.avatar" class="w-10 h-10 rounded-full border-2 border-white object-cover shadow-sm" [title]="p.username + ': ' + p.score">
+                <img *ngFor="let p of game.players.slice(0, 3)" [src]="p.avatar" class="w-10 h-10 rounded-full border-2 border-white object-cover shadow-sm" [title]="p.username + ': ' + p.score">
                 <div *ngIf="game.players.length > 3" class="w-10 h-10 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-500 shadow-sm">
                   +{{ game.players.length - 3 }}
                 </div>

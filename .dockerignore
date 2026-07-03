@@ -1,0 +1,17 @@
+node_modules
+server
+dist
+out-tsc
+.angular
+*.tsbuildinfo
+.env
+.env.local
+.env.*.local
+.git
+.gitignore
+.vscode
+.idea
+README.md
+logs
+*.log
+coverage
