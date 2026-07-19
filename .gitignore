@@ -1,6 +1,5 @@
 # ── Dépendances ───────────────────────────────────────────────────────────────
-/node_modules
-/server/node_modules
+node_modules/
 
 # ── Variables d'environnement ─────────────────────────────────────────────────
 # Garder .env.example (intentionnellement versionné)
@@ -8,23 +7,24 @@
 .env.local
 .env.*.local
 
-# ── Build Angular ─────────────────────────────────────────────────────────────
-/dist
-/out-tsc
-/.angular/cache
-
-# ── TypeScript ────────────────────────────────────────────────────────────────
+# ── Cache / build ─────────────────────────────────────────────────────────────
+dist/
+.cache/
+.next/
+next-env.d.ts
+src/generated/
 *.tsbuildinfo
 
 # ── Logs ──────────────────────────────────────────────────────────────────────
 logs/
 *.log
 npm-debug.log*
-yarn-error.log*
+yarn-debug.log*
 
 # ── Tests & coverage ──────────────────────────────────────────────────────────
-/coverage
+coverage/
 *.lcov
+.nyc_output/
 
 # ── OS ────────────────────────────────────────────────────────────────────────
 .DS_Store

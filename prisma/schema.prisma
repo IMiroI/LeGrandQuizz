@@ -1,0 +1,122 @@
+generator client {
+  provider      = "prisma-client-js"
+  output        = "../src/generated/prisma"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGO_URI")
+}
+
+// Les 8 types de manches définis avec l'utilisateur — voir la planche de
+// style / synthèse de design pour le détail de chaque mécanique. `config`
+// sur Manche porte les réglages propres au type (taille de grille, seuil de
+// points, règle d'élimination...) plutôt que d'éclater le schéma en huit
+// modèles quasi identiques.
+enum RoundType {
+  QCM
+  REPONSE_EXACTE
+  GRILLE_SIMPLE
+  GRILLE_SPECIALE
+  VOL_LIBRE
+  VOL_DUEL
+  COURSE_POINTS
+  ELIMINATION
+}
+
+enum EliminationRule {
+  VOTE
+  SCORE_FAIBLE
+  MAUVAISE_REPONSE
+}
+
+model Quiz {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String?
+  theme       String?
+  isPublic    Boolean  @default(false)
+
+  // Référence opaque vers le User de VGAMES : base Mongo distincte
+  // (LEGRANDQUIZZ vs VGAMES), donc pas de relation Prisma possible — même
+  // convention que l'ancien champ `owner` de l'app Express/Mongoose.
+  ownerId String @db.ObjectId
+
+  minPlayers Int?
+  maxPlayers Int?
+
+  manches Manche[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ownerId])
+  @@map("quizzes")
+}
+
+model Manche {
+  id     String    @id @default(auto()) @map("_id") @db.ObjectId
+  quizId String    @db.ObjectId
+  quiz   Quiz      @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  order  Int
+  type   RoundType
+
+  // Réglages spécifiques au type de manche, ex. :
+  // GRILLE_SIMPLE/SPECIALE : { size: 5 }
+  // COURSE_POINTS          : { threshold: 10, buzzDelaySeconds: 5 }
+  // ELIMINATION            : { rule: "SCORE_FAIBLE", survivors: 1 }
+  // VOL_LIBRE/VOL_DUEL      : { pointsPerQuestion: 200 }
+  config Json
+
+  questions Question[]
+
+  @@index([quizId, order])
+  @@map("manches")
+}
+
+model Question {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  mancheId String @db.ObjectId
+  manche   Manche @relation(fields: [mancheId], references: [id], onDelete: Cascade)
+  order    Int
+
+  text    String
+  points  Int    @default(100)
+
+  // QCM : options + index de la bonne réponse (2 à 6 options, variable par question)
+  options       String[] @default([])
+  correctOption Int?
+
+  // Réponse exacte : comparée avec tolérance aux fautes (Levenshtein) côté serveur
+  correctText String?
+
+  // Position sur le plateau pour les manches Grille ; case spéciale
+  // ("bonus" | "piege" | "vol") pour Grille cases spéciales
+  gridRow     Int?
+  gridCol     Int?
+  specialType String?
+
+  @@index([mancheId, order])
+  @@map("questions")
+}
+
+model GameHistory {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  quizId    String   @db.ObjectId
+  quizTitle String
+  roomCode  String
+
+  // [{ userId, username, avatar, score, eliminated }] — snapshot de fin de
+  // partie, pas de relation : les joueurs sans compte VGAMES (mode invité)
+  // n'ont pas toujours de userId.
+  players Json
+
+  // Journal optionnel des événements marquants (vol de points, élimination...)
+  events Json?
+
+  playedAt DateTime @default(now())
+
+  @@index([quizId])
+  @@map("game_history")
+}

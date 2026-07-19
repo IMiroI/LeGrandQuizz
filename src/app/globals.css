@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: var(--font-bungee), "Arial Black", sans-serif;
+  --font-sans: var(--font-manrope), "Segoe UI", system-ui, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", Consolas, monospace;
+
+  /* Identité validée sur la planche de style : le doré porte seul
+     l'accent (score, boutons principaux, minuteur) ; corail et sarcelle
+     restent des couleurs sémantiques (danger/vol/élimination vs succès),
+     jamais des accents décoratifs. */
+  --color-ink: #15141f;
+  --color-ink-soft: #6b6880;
+  --color-paper: #f3f2f9;
+  --color-paper-2: #e9e7f3;
+  --color-panel: #ffffff;
+  --color-line: #d8d5e6;
+  --color-gold: #f7b733;
+  --color-gold-ink: #3d2a00;
+  --color-coral: #ff4d6d;
+  --color-teal: #1fb897;
+}
+
+/* Écrans hors-jeu (création, comptes, listes) : suivent le thème du
+   visiteur. Les écrans de partie (hôte/joueur) restent en sombre fixe,
+   façon plateau — géré localement dans leurs composants, pas ici. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-ink: #f1eff9;
+    --color-ink-soft: #b6b2c9;
+    --color-paper: #121017;
+    --color-paper-2: #1b1926;
+    --color-panel: #1b1926;
+    --color-line: #322f42;
+  }
+}
+:root[data-theme="dark"] {
+  --color-ink: #f1eff9;
+  --color-ink-soft: #b6b2c9;
+  --color-paper: #121017;
+  --color-paper-2: #1b1926;
+  --color-panel: #1b1926;
+  --color-line: #322f42;
+}
+:root[data-theme="light"] {
+  --color-ink: #15141f;
+  --color-ink-soft: #6b6880;
+  --color-paper: #f3f2f9;
+  --color-paper-2: #e9e7f3;
+  --color-panel: #ffffff;
+  --color-line: #d8d5e6;
+}
+
+body {
+  @apply bg-paper text-ink;
+}
